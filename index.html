@@ -48,7 +48,7 @@
 <body>
     <iframe 
         id="typewriterFrame"
-        src="https://typewritern-sperraults-projects.vercel.app"
+        src="https://typewritern.vercel.app"
         title="Notion Typewriter"
         allow="fullscreen"
         loading="eager"
@@ -58,7 +58,7 @@
     <div class="fallback">
         <h1>Notion Typewriter</h1>
         <p>Loading... If this message persists, the content may be unavailable.</p>
-        <p><a href="https://typewritern-sperraults-projects.vercel.app" target="_blank">Open in new tab ↗</a></p>
+        <p><a href="https://typewritern.vercel.app" target="_blank">Open in new tab ↗</a></p>
     </div>
     
     <script>
@@ -70,7 +70,7 @@
         const timeout = setTimeout(() => {
             iframe.style.display = 'none';
             fallback.style.display = 'block';
-            fallback.querySelector('p').textContent = 'Unable to load embedded content. The Vercel deployment may still be building.';
+            fallback.querySelector('p').textContent = 'Unable to load embedded content.';
         }, 10000); // 10 second timeout
         
         // Hide fallback if iframe loads successfully

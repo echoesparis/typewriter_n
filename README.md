@@ -10,94 +10,114 @@ A typewriter effect that displays content from a Notion page, with full support 
 - 🔗 Link support
 - 📱 Responsive design
 
-## Local Development
+## Quick Start
 
 ### Prerequisites
 
 - Node.js installed
-- A Notion API token (get from [Notion Integrations](https://www.notion.so/my-integrations))
+- A Notion API token ([get one here](https://www.notion.so/my-integrations))
 
-### Setup
+### Local Development
 
-1. **Install dependencies**:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-cd typewriter_notion
-npm install
-```
+2. **Create a `.env` file:**
+   ```env
+   NOTION_TOKEN=your_notion_token_here
+   NOTION_BLOCK_ID=your_block_id_here
+   ```
 
-2. **Create a `.env` file**:
+3. **Get your Notion credentials:**
+   - **Token**: Go to [Notion Integrations](https://www.notion.so/my-integrations) → Create integration → Copy "Internal Integration Token"
+   - **Block ID**: Open your Notion page → Copy link → Extract the ID (part after last `/` and before any `?`)
+     - Example: `https://notion.so/page/2297e0b5c63440f883ea65aedc7611d1` → Block ID is `2297e0b5c63440f883ea65aedc7611d1`
 
-Copy `.env.example` to `.env` and add your Notion token:
+4. **Start the proxy server:**
+   ```bash
+   npm start
+   # or
+   node proxy-server.js
+   ```
 
-```bash
-cp .env.example .env
-```
+5. **Open `index.html` in your browser**
 
-Then edit `.env` and add your token:
-```
-NOTION_TOKEN=your_notion_token_here
-NOTION_BLOCK_ID=your_block_id_here
-```
+The typewriter will automatically fetch content from your Notion page.
 
-3. **Start the proxy server** (required to avoid CORS issues):
+## Configuration
 
-```bash
-npm start
-# or
-node proxy-server.js
-```
+Edit `script.js` to customize:
 
-The server will run on `http://localhost:3001`
-
-4. **Open the HTML file** in your browser:
-
-Open `index.html` in your browser. The typewriter will automatically fetch content from Notion.
-
-> **Note:** The token in `script.js` is not used when `USE_PROXY=true` (default). The proxy server handles authentication using the token from `.env`.
-
-### Configuration
-
-Edit `script.js` to change:
 - `NOTION_BLOCK_ID`: The Notion block/page ID to fetch content from
-  - Get this from your Notion page URL (the part after the last `/` and before any `?`)
-  - Example: `https://notion.so/page/2297e0b5c63440f883ea65aedc7611d1` → Block ID is `2297e0b5c63440f883ea65aedc7611d1`
+- `TYPEWRITER_CONFIG`: Animation settings (delay, speed, etc.)
 - `PROXY_URL`: Automatically detected (localhost for dev, current origin for production)
-- `USE_PROXY`: Set to `false` only if you want to test direct API calls (will fail due to CORS)
 
 ## Deployment
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+### Deploy to Vercel (Recommended)
 
-**Quick summary:**
-- GitHub Pages can host the frontend, but **cannot run the Node.js proxy server**
-- You need to deploy the proxy separately (Vercel, Netlify, Railway, etc.)
-- Or use Vercel to host everything (frontend + serverless function)
+Vercel hosts both the frontend and serverless function in one place.
+
+1. **Install Vercel CLI:**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Login and deploy:**
+   ```bash
+   vercel login
+   vercel --prod
+   ```
+
+3. **Set environment variables in Vercel:**
+   - Go to your project → Settings → Environment Variables
+   - Add `NOTION_TOKEN` with your token value
+   - Add `NOTION_BLOCK_ID` with your block ID
+   - Redeploy
+
+4. **Your app will be live at:**
+   - `https://your-project.vercel.app`
+
+### Embed in Notion
+
+Once deployed, you can embed your typewriter in Notion:
+
+1. In Notion, type `/embed` or click `+` → `Embed`
+2. Paste your Vercel URL: `https://your-project.vercel.app`
+3. Press Enter
+
+The app is configured to allow iframe embedding with proper headers.
+
+## How It Works
+
+1. Browser loads `index.html` and `script.js`
+2. `script.js` makes a request to the serverless function at `/api/notion/blocks/:blockId/children`
+3. The serverless function (`api/notion.js`) makes the actual request to Notion API (avoiding CORS)
+4. Content is returned and displayed with typewriter effect
+5. Notion formatting (colors, highlights, etc.) is preserved
 
 ## Project Structure
 
 ```
-typewriter_notion/
+typewriter_n/
 ├── index.html          # Main HTML file
 ├── script.js           # Client-side JavaScript
 ├── styles.css          # Styling
-├── proxy-server.js     # Node.js proxy server (for local dev)
+├── proxy-server.js     # Node.js proxy server (for local dev only)
 ├── api/
 │   └── notion.js      # Vercel serverless function (for deployment)
 ├── vercel.json        # Vercel configuration
-├── DEPLOYMENT.md      # Deployment guide
-└── README.md          # This file
+└── package.json       # Dependencies
 ```
 
-## How It Works
+## Notes
 
-1. The browser loads `index.html` and `script.js`
-2. `script.js` makes a request to the proxy server (or serverless function)
-3. The proxy/serverless function makes the actual request to Notion API (avoiding CORS)
-4. Content is returned and displayed with typewriter effect
-5. Notion formatting (colors, highlights, etc.) is preserved
+- **Local development**: Requires running `proxy-server.js` to avoid CORS issues
+- **Production**: Uses Vercel serverless function automatically (no proxy needed)
+- **Environment variables**: `.env` file is gitignored for security. Never commit your actual token.
 
 ## License
 
 See repository license.
-
