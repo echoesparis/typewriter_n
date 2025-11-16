@@ -4,6 +4,17 @@
       "source": "/api/notion/blocks/:blockId/children",
       "destination": "/api/notion.js?blockId=:blockId"
     }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors *"
+        }
+      ]
+    }
   ]
 }
 
